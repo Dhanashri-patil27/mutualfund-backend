@@ -10,8 +10,11 @@ const configObj = {
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         dialect: "postgres"
+    },
+    production: {
+        use_env_variable: "DATABASE_URL",
+        dialect: "postgres"
     }
 };
 
-// Export using ESM syntax
 export default configObj;
