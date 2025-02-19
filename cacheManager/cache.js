@@ -1,51 +1,68 @@
-import Redis from 'ioredis';
-import dotenv from 'dotenv';
+import database from "../models/index.js"; // Import Sequelize DB
+import { Op } from "sequelize"; // For expiry condition
 
-dotenv.config(); 
-const redis = new Redis(process.env.REDIS_URL, {
-  tls: { rejectUnauthorized: false }
-});
+const CACHE_EXPIRY_TIME = 3600 * 1000; // 1 hour in milliseconds
+console.log("🚀 ~ CACHE_EXPIRY_TIME:", CACHE_EXPIRY_TIME)
 
-const CACHE_EXPIRY_TIME = 3600; // Cache expiry time in seconds (1 hour)
-
-export class CacheManager {
-  // Retrieve data from Redis cache
+class CacheManager {
   static async getCache(cacheKey) {
     try {
-      const cachedData = await redis.get(cacheKey);
+      const dbCache = await database.cache.findOne({
+        where: {
+          key: cacheKey,
+          expiresAt: { [Op.gt]: new Date() }, // Check if still valid
+        },
+      });
 
-      if (cachedData) {
-        console.log(" Cache hit:", cacheKey);
-        return JSON.parse(cachedData);
+      if (dbCache) {
+        console.log("Cache hit from DB");
+        return dbCache.data;
       }
 
-      console.log("❌ Cache miss:", cacheKey);
+      console.log("Cache miss");
       return null;
     } catch (error) {
-      console.error("❌ Error fetching cache from Redis:", error);
+      console.error("Error fetching cache:", error);
       return null;
     }
   }
-
 
   static async setCache(cacheKey, data) {
     try {
-      await redis.setex(cacheKey, CACHE_EXPIRY_TIME, JSON.stringify(data));
-      console.log(" Cache updated successfully:", cacheKey);
+      const expiresAt = new Date(Date.now() + CACHE_EXPIRY_TIME); // Expiry time
+      console.log("🚀 ~ CacheManager ~ setCache ~ expiresAt:", expiresAt)
+
+      await database.cache.upsert({
+        key: cacheKey,
+        data: data,
+        expiresAt: expiresAt, // Set expiry
+      });
+
+      console.log("Cache set in PostgreSQL");
     } catch (error) {
-      console.error(" Error setting cache in Redis:", error);
+      console.error("Error setting cache:", error);
     }
   }
 
-  // Clear specific cache key
-  static async clearCache(cacheKey) {
+  static async deleteCache(cacheKey) {
     try {
-      await redis.del(cacheKey);
-      console.log(" Cache cleared:", cacheKey);
+      await database.cache.destroy({ where: { key: cacheKey } });
+      console.log("Cache deleted from PostgreSQL");
     } catch (error) {
-      console.error(" Error clearing cache in Redis:", error);
+      console.error("Error deleting cache:", error);
+    }
+  }
+
+  static async cleanExpiredCache() {
+    try {
+      await database.cache.destroy({
+        where: { expiresAt: { [Op.lte]: new Date() } }, // Delete expired records
+      });
+      console.log("Expired cache cleaned");
+    } catch (error) {
+      console.error("Error cleaning expired cache:", error);
     }
   }
 }
 
-export default redis; // Export Redis instance for global use
+export default CacheManager;

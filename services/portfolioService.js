@@ -1,6 +1,6 @@
 import FundsService from './fundsService.js'
 import database from '../models/index.js';
-import { CacheManager } from '../cacheManager/cache.js'; 
+import  CacheManager  from '../cacheManager/cache.js'; 
 import ErrorCodes from '../errors/ErrorCodes.js';
 
 class PortfolioService {

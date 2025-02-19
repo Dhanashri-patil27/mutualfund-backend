@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CacheManager } from '../cacheManager/cache.js'; // Assuming CacheManager is in a separate file
+import CacheManager from '../cacheManager/cache.js'; // Assuming CacheManager is in a separate file
 
 class FundService {
   static async getFundFamilies() {
@@ -13,15 +13,14 @@ class FundService {
 
       // Attempt to fetch fresh data from API
       const apiData = await FundService.fetchDataFromAPI();
-      console.log("🚀 ~ FundService ~ getFundFamilies ~ apiData:", apiData)
       if (apiData) {
-        await CacheManager.setCache(cacheKey, apiData); // Cache the fresh data
         if(Array.isArray(apiData)){
               const fundFamilies = [...new Set(response.data.map(fund => fund.Mutual_Fund_Family))]  // Unique family names
               .map(familyName => ({
               familyName,
               id: familyName.toLowerCase().replace(/\s+/g, '-') 
               }));
+              await CacheManager.setCache(cacheKey, fundFamilies);
               return fundFamilies;
             }
 
@@ -29,14 +28,13 @@ class FundService {
 
       // If API fails, fall back to AMFI data
       const amfiData = await FundService.fetchDataFromAMFI();
-      await CacheManager.setCache('latestNavData', amfiData); // Cache AMFI data
         if (Array.isArray(amfiData)) {
           const fundFamilies = [...new Set(amfiData.map(fund => fund.Mutual_Fund_Family))]  // Unique family names
             .map(familyName => ({
               familyName: familyName.replace(/\r/g, '').trim(),
               id: familyName.toLowerCase().replace(/\s+/g, '-') 
             }));
-          
+               await CacheManager.setCache(cacheKey, fundFamilies);
           return fundFamilies;
         } else {
           return []; 
@@ -63,9 +61,9 @@ class FundService {
 
       const response = await axios.request(options);
       
-      await CacheManager.setCache('latestNavData', response.data); 
       if (response.data) {
         console.log("Data fetched from API");
+        await CacheManager.setCache('latestNavData', response.data); 
         return response.data;
       }
 
@@ -85,9 +83,12 @@ class FundService {
   
       const response = await axios.request(options);
       if (response.data) {
-        const amfiData = FundService.parseAMFIData(response.data);;
-          return amfiData;
-        
+        console.log("Data fetched from AMFI");
+        const amfiData = FundService.parseAMFIData(response.data);
+        if(amfiData){
+          await CacheManager.setCache('latestNavData', amfiData); 
+          return amfiData;  
+        }    
       }  
       return [];
     } catch (error) {
