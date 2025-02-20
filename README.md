@@ -93,8 +93,8 @@ The API will be available at `http://localhost:3000`
 | Method | Endpoint          | Description                    |
 |--------|------------------|--------------------------------|
 | POST   | /api/portfolio/add | Add new investment            |
-| GET    | /api/portfolio/   | View user investments         |
-| GET    | /api/portfolio/value | View portfolio value         |
+| GET    | /api/portfolio/?userId=XYZ   | View user investments         |
+| GET    | /api/portfolio/value?userId=XYZ | View portfolio value         |
 
 ## Running Tests
 Run the test suite using:
