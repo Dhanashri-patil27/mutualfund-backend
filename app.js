@@ -37,6 +37,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Route handlers
+app.get("/", (req, res) => {
+    res.send("Backend is running successfully!");
+});
 app.use('/api/users', users);
 app.use('/api/funds', funds);
 app.use('/api/portfolio', portfolios);
