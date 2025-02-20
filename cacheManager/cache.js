@@ -7,6 +7,7 @@ console.log("🚀 ~ CACHE_EXPIRY_TIME:", CACHE_EXPIRY_TIME)
 class CacheManager {
   static async getCache(cacheKey) {
     try {
+      console.log("🚀 ~ CacheManager ~ getCache ~  new Date():",  new Date())
       const dbCache = await database.cache.findOne({
         where: {
           key: cacheKey,

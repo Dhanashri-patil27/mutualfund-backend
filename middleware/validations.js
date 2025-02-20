@@ -35,7 +35,7 @@ export const loginRules = () => [
 
 
 export const signUpRules = () => [
-  body('name', 'name missing or Invalid Value').exists().isAlpha().isString().not().isEmpty(),
+  body('name', 'name missing or Invalid Value').exists().isString().not().isEmpty().matches(/^[a-zA-Z ]+$/),
   body('email', 'email missing or Invalid Value').exists().isEmail().not().isEmpty(),
   body('password', ' password key is missing').exists(),   
   body('password', 'Please enter a password at least 8 characters and contain at least one uppercase, one lowercase, and one special character.')
