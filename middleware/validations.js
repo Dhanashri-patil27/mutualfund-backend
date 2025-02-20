@@ -59,6 +59,7 @@ export const addPortfolio = () => [
   body('userId', 'userId is missing or invalid').exists().isUUID().not().isEmpty(),
   body('schemeCode', 'schemeCode is missing or invalid').exists().isString().not().isEmpty(),
   body('schemeName', 'schemeName is missing or invalid').exists().isString().not().isEmpty(),
-  body('units', 'units is missing or invalid').exists().isNumeric().not().isEmpty(),
-  body('purchasePrice', 'purchasePrice is missing or invalid').exists().isNumeric().not().isEmpty(),
+  body('units', 'units is missing or invalid').exists().not().isEmpty(),
+  body('units', 'units must be whole number').isInt().toInt(),
+  body('purchasePrice', 'purchasePrice is missing or invalid').exists().notEmpty().isFloat().toFloat(),
 ];
