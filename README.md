@@ -25,7 +25,7 @@ This is a backend application for a Mutual Fund Brokerage Firm that allows users
 ├── 📂 config         # Configuration files
 ├── 📂 controller     # Route logic
 ├── 📂 errors         # Error handling modules
-├── 📂 jobs           # Scheduled jobs (if any)
+├── 📂 jobs           # Scheduled jobs
 ├── 📂 middleware     # Authentication and validation middleware
 ├── 📂 migrations     # Database migration files
 ├── 📂 models         # Database models
@@ -38,7 +38,6 @@ This is a backend application for a Mutual Fund Brokerage Firm that allows users
 ├── 📜 package.json   # Dependencies and scripts
 ├── 📜 package-lock.json # Lock file for dependencies
 ├── 📜 README.md      # Project documentation
-└── 📜 db_migrations.sql  # Initial database schema
 ```
 
 ## Setup Instructions
