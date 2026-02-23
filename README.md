@@ -105,9 +105,5 @@ npm test
 Import the following Postman collection to test the API:
 [Postman Collection](https://documenter.getpostman.com/view/15719725/2sAYdZvaCD)
 
-## Live Deployment
-The application is live on Render:
-**[Mutual Fund Broker Web Application Backend](https://dhanashri-patil27.github.io/mutualfund-frontend/)**
-
 The frontend repository is available here:
 **[Frontend Repository](https://github.com/Dhanashri-patil27/mutualfund-frontend.git)**
